@@ -2,13 +2,12 @@
 
 to install
 ```
-git clone LexRiver/queue-handler
-```
-
-```
+git clone https://github.com/LexRiver/queue-handler.git
+cd queue-handler
 npm install
 ```
 
+to run
 ```
 npm run start
 ```
