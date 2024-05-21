@@ -1,0 +1,1 @@
+export type TypeFunction = (param:string)=>void
