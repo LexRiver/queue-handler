@@ -3,10 +3,17 @@ import * as readline from 'readline'
 
 export module QueueHandler{
 
-    const userInput = readline.createInterface({
-        input: process.stdin,
-        output: process.stdout
-    })
+    // let userInput = readline.createInterface({
+    //     input: process.stdin,
+    //     output: process.stdout
+    // })
+
+    // function initUserInput(){
+    //     userInput = readline.createInterface({
+    //         input: process.stdin,
+    //         output: process.stdout
+    //     })
+    // }
 
     const allFunctions:TypeFunction[] = []
     const allParams:string[] = []
@@ -17,32 +24,50 @@ export module QueueHandler{
 
     }
 
-    function tryReadNextLineAsync(){
-        return new Promise((resolve) => {
-            userInput.question(`Total functions count = ${allFunctions.length}. Type next param: `, (param:string) => {
-                if(param) {
-                    allParams.push(param)
-                    resolve(param)
-                } else {
-                    console.log('bad parameter, try again')
-                    // tryReadNextLine()
-                }
-            })
+    // function tryReadNextLineAsync(){
+    //     return new Promise((resolve) => {
+    //         userInput.question(`Total functions count = ${allFunctions.length}. Type next param: `, (param:string) => {
+    //             if(param) {
+    //                 allParams.push(param)
+    //                 resolve(param)
+    //             } else {
+    //                 console.log('bad parameter, try again')
+    //                 // tryReadNextLine()
+    //             }
+    //         })
     
+    //     })
+    // }
+
+    export function readLineAsync(){
+        return new Promise<string>((resolve) => {
+            // if(!userInput){
+            //     initUserInput()
+            // }
+            const userInput = readline.createInterface({
+                input: process.stdin,
+                output: process.stdout
+            })
+
+            userInput.question('type the parameter: ', (text) => {
+                allParams.push(text)
+                resolve(text)
+                userInput.close()
+            })
         })
     }
 
-    export async function startListenToUserInputAsync(){
-        while(allFunctions.length>0){
-            await tryReadNextLineAsync()
-            tryExecuteFirstFunction()
-        }
-        console.warn('No functions in list, so quit')
-        userInput.close()
+    // export async function startListenToUserInputAsync(){
+    //     while(allFunctions.length>0 || allParams.length>0){
+    //         await tryReadNextLineAsync()
+    //         tryExecuteFirstFunction()
+    //     }
+    //     console.warn('count of functions=', allFunctions.length, 'count of params=', allParams.length, 'so quit')
+    //     userInput.close()
         
-    }
+    // }
 
-    function tryExecuteFirstFunction(){
+    export function tryExecuteFirstFunction(){
         if(allFunctions.length>0 && allParams.length>0){
             const fn = allFunctions.shift()
             const param = allParams.shift()

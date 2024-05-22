@@ -4,20 +4,20 @@ console.log('hi!')
 
 
 async function startAsync(){
-    QueueHandler.addFunction((param) => { console.log(`Executing function 1 with param: ${param}`) })
-    QueueHandler.addFunction((param) => { console.log(`Executing function 2 with param: ${param}`) })
-    QueueHandler.addFunction((param) => { console.log(`Executing function 3 with param: ${param}`) })
-    
-    void QueueHandler.startListenToUserInputAsync()
+
+    const text1 = await QueueHandler.readLineAsync()
+    console.log('read text1 = ', text1)
+
+    const text2 = await QueueHandler.readLineAsync()
+    console.log('read text2 = ', text2)
+
+    QueueHandler.addFunction((x) => console.log('1--->', x))
+    QueueHandler.addFunction((x) => console.log('2--->', x))
+
+    QueueHandler.tryExecuteFirstFunction()
+    QueueHandler.tryExecuteFirstFunction()
     
 
-    setTimeout(() => {
-        QueueHandler.addFunction((param) => { console.log(`Executing function 4 with param: ${param}`)})
-    }, 5*1000)
-
-    setTimeout(() => {
-        QueueHandler.addFunction((param) => { console.log(`Executing function 5 with param: ${param}`)})
-    }, 10*1000)
 
     
 }
