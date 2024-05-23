@@ -64,7 +64,7 @@ function start3(){
 
 
 
-// start() // not works
+// start1() // not works
 // start2() // works
 start3() //works
 
