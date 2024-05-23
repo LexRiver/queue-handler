@@ -64,7 +64,7 @@ function start3(){
 
 
 
-// startAsync()
-// startAsync2()
-start3()
+// start() // not works
+// start2() // works
+start3() //works
 
