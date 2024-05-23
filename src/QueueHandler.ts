@@ -2,77 +2,72 @@ import { TypeFunction } from "./types/TypeFunction";
 import * as readline from 'readline'
 
 export module QueueHandler{
-
-    // let userInput = readline.createInterface({
-    //     input: process.stdin,
-    //     output: process.stdout
-    // })
-
-    // function initUserInput(){
-    //     userInput = readline.createInterface({
-    //         input: process.stdin,
-    //         output: process.stdout
-    //     })
-    // }
-
     const allFunctions:TypeFunction[] = []
     const allParams:string[] = []
-    export function addFunction(fn:TypeFunction){
-        allFunctions.push(fn)
-        // console.log('adding new function. total count = ', allFunctions.length)
-        console.log('(+1fn)')
+    let userInput:readline.Interface 
+    let isListening:boolean = false
 
+    export function init(){
+        userInput = readline.createInterface({
+            input: process.stdin,
+            output: process.stdout
+        })
+
+        userInput.on('pause', () => {
+            console.log('event: pause')
+        })
+        userInput.on('resume', () => {
+            console.log('event: resume')
+        })
+    }
+    
+    export function addFunction(fn:TypeFunction){
+        if(!userInput) throw new Error('please init first')
+        allFunctions.push(fn)
+        console.log('(+1fn)')
+        // void startListenToUserInputAsync()
+        tryExecuteFirstFunction()
+        void listenToParamAsync()
     }
 
-    // function tryReadNextLineAsync(){
-    //     return new Promise((resolve) => {
-    //         userInput.question(`Total functions count = ${allFunctions.length}. Type next param: `, (param:string) => {
-    //             if(param) {
-    //                 allParams.push(param)
-    //                 resolve(param)
-    //             } else {
-    //                 console.log('bad parameter, try again')
-    //                 // tryReadNextLine()
-    //             }
-    //         })
-    
-    //     })
-    // }
 
-    export function readLineAsync(){
-        return new Promise<string>((resolve) => {
-            // if(!userInput){
-            //     initUserInput()
-            // }
-            const userInput = readline.createInterface({
-                input: process.stdin,
-                output: process.stdout
-            })
-
-            userInput.question('type the parameter: ', (text) => {
-                allParams.push(text)
-                resolve(text)
-                userInput.close()
+    function getNextLineAsync():Promise<string>{
+        return new Promise((resolve) => {
+            userInput.question(`Total functions count = ${allFunctions.length}. Type next param: `, (param:string) => {
+                console.log('on param: ', param)
+                resolve(param)
             })
         })
     }
 
-    // export async function startListenToUserInputAsync(){
-    //     while(allFunctions.length>0 || allParams.length>0){
-    //         await tryReadNextLineAsync()
-    //         tryExecuteFirstFunction()
-    //     }
-    //     console.warn('count of functions=', allFunctions.length, 'count of params=', allParams.length, 'so quit')
-    //     userInput.close()
-        
-    // }
+    async function listenToParamAsync(){
+        if(isListening) {
+            console.log(' (l) already listening, return')
+            return
+        }
+        isListening = true
+        console.log(' (l) start listening to param')
+        userInput.resume()
+        while(allFunctions.length>0){
+            const param = await getNextLineAsync()
+            allParams.push(param)
+            tryExecuteFirstFunction()
+        }
+        userInput.pause()
+        isListening = false
+        console.log(' (l) stop listening to param', 'allFunctions.length=', allFunctions.length)
+    }
+
 
     export function tryExecuteFirstFunction(){
+        console.log(' (x) tryExecuteFirstFunction')
         if(allFunctions.length>0 && allParams.length>0){
             const fn = allFunctions.shift()
             const param = allParams.shift()
             if(!fn || !param) throw new Error('impossible')
-            console.log('executing function!', fn(param))
+            console.log(' (x) executing function!', fn(param))
         }
     }
+
+
 }
